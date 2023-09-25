@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+</head>
+<body>
+<h1>fio:</h1>
+<h2 id="inner"></h2>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const elem = document.getElementById("inner");
+
+        fetch("/api/name")
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch data");
+                }
+                return response.text();
+            })
+            .then((text) => {
+                elem.textContent = text;
+            })
+            .catch((error) => {
+                console.error("An error occurred:", error);
+            });
+    });
+</script>
+</body>
+</html>

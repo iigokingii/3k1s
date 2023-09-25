@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>lab2</title>
+</head>
+<body>
+    <h1>ФИО:</h1>
+    <h2 id ='fio'></h2>
+    <script>
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET','http://127.0.0.1:5000/api/name',false);
+        xhr.send();
+        let FIO = document.getElementById("fio");
+
+        if(xhr.status==200)
+            FIO.innerHTML = xhr.responseText;
+        else{
+            console.log('Error');
+            console.log(xhr.responseText)
+            console.log(xhr.statusText)
+            console.log(xhr.status)
+        }
+    </script>
+</body>
+</html>
