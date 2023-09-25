@@ -1,6 +1,5 @@
 @echo off
 set ss=%~nx0
-echo %ss%
 echo имя этого bat-файла :%ss%
 echo этот bat-файл создан:
 
@@ -8,5 +7,5 @@ rem Параметр /a-d указывает, что нужно показать
 rem сортировка по дате в обратном порядке (/o-d)
 rem Флаг /T:C указывает сортировать по "последнему изменению"
 
-for /f "tokens=1,2" %%a in ('dir %ss% /a-d /o-d /T:C') do @echo %%a %%b | find ":"
+for /f "tokens=1,2" %%a in ('dir %ss% /a-d /o-d /T:C') do echo %%a %%b | find ":"
 echo путь bat-файла:%cd%
