@@ -1,0 +1,7 @@
+﻿  SP02_LIB.cpp
+D:\3k1s\SP\labs\lab2\SP02_LIB\SP02_LIB\SP02_LIB.cpp(41): warning C4715: SP02::Adder::Add: значение возвращается не при всех путях выполнения
+D:\3k1s\SP\labs\lab2\SP02_LIB\SP02_LIB\SP02_LIB.cpp(57): warning C4715: SP02::Adder::Sub: значение возвращается не при всех путях выполнения
+D:\3k1s\SP\labs\lab2\SP02_LIB\SP02_LIB\SP02_LIB.cpp(74): warning C4715: SP02::Multiplier::Div: значение возвращается не при всех путях выполнения
+D:\3k1s\SP\labs\lab2\SP02_LIB\SP02_LIB\SP02_LIB.cpp(90): warning C4715: SP02::Multiplier::Mul: значение возвращается не при всех путях выполнения
+D:\3k1s\SP\labs\lab2\SP02_LIB\SP02_LIB\SP02_LIB.cpp(25): warning C4715: SP02::Init: значение возвращается не при всех путях выполнения
+  SP02_LIB.vcxproj -> D:\3k1s\SP\labs\lab2\SP02_LIB\x64\Debug\SP02_LIB.lib
