@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>lab1 update</title>
+</head>
+<body>
+<div class="container">
+  <h1>Update film:</h1>
+  <form th:action="@{/update}"
+        th:object="${filmupdateform}" method="POST">
+    <p>ID:
+      <input type="text" th:field="*{id}" />
+    </p>
+    <p>Title:
+      <input type="text" th:field="*{title}" />
+    </p>
+    <p> Author:
+      <input type="text" th:field="*{author}" />
+    </p>
+    <input class ="button-main-page" type="submit" value="Update" />
+  </form>
+</div>
+<div th:if="${errorMessage}" th:utext="${errorMessage}"
+     style="color:red;font-style:italic;">
+</div>
+</body>
+</html>
