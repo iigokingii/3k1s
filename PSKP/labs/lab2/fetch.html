@@ -9,7 +9,6 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const elem = document.getElementById("inner");
-
         fetch("/api/name")
             .then((response) => {
                 if (!response.ok) {
