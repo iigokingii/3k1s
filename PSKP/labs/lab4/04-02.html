@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>lab4</title>
+</head>
+<body>
+    <div id="GET_Method"></div>
+    <div>
+        <div>
+            <label>Идентификатор</label>
+            <input type="number" id = "ID" min="0"/>
+        </div>
+        <div>
+            <label>ФИО</label>
+            <input type="text" id = "Name"/>
+        </div>
+        <div>
+            <label>Дата рождения: </label>
+            <input type="date" id = "BDay" max="2023-10-10"/>
+        </div>
+        <div>
+            <button onclick="POST()"> POST </button>
+            <button onclick="GET()">GET</button>
+            <button onclick="PUT()">PUT</button>
+            <button onclick="DELETE()">DELETE</button>
+        </div>
+    </div>
+    <script>
+        function DELETE(){
+            console.log('DELETE');
+            let id = parseInt(ID.value);
+            if(Number.isInteger(id)){
+                fetch('http://127.0.0.1:5000/api/db',{
+                    method:'DELETE',
+                    headers:{
+                        'Content-type':'application/json',
+                        'Accept':'application/json'
+                    },
+                    body:JSON.stringify({
+                        id:ID.value,
+
+                    })
+                })
+                Name.value = "";
+                BDay.value = "";
+                ID.value = "";
+
+
+            }
+        }
+        function compareDate() {
+            let currentDate = new Date('2023-10-10');
+            let inputDate = new Date(BDay.value.toString());
+            if(currentDate>inputDate)
+                return true;
+            return false;
+        }
+        function PUT(){
+            console.log('PUT');
+            let id = parseInt(ID.value);
+            if(Number.isInteger(id) && Name.value!==""&&BDay.value!=="" && compareDate()){
+                console.log('first');
+                fetch("http://127.0.0.1:5000/api/db",{
+                    method:'PUT',
+                    headers:{
+                        'Content-type':'application/json',
+                        'Accept':'application/json'
+                    },
+                    body:JSON.stringify({
+                        id:ID.value,
+                        name:Name.value,
+                        bday:BDay.value
+                    })
+                })
+                Name.value = "";
+                BDay.value = "";
+                ID.value = "";
+            }
+            else if(Number.isInteger(id)){
+                console.log('second');
+                fetch("http://127.0.0.1:5000/api/db",{
+                    method:'GET',
+                    headers:{
+                        'Content-type':'application/json',
+                        'Accept':'application/json'
+                    }
+                }).then(response=>{
+                    return response.json();
+                }).then((pdata)=>{
+                    Name.value = '';
+                    BDay.value = '';
+                    pdata.forEach(el=>{
+                        if (el.id.toString()===ID.value){
+                            Name.value += el.name.toString();
+                            console.log(el.name);
+                            BDay.value += el.bday.toString();
+                            console.log(el.bday);
+                        }
+                    });
+                });
+            }
+
+        }
+        function GET(){
+            console.log('GET');
+            fetch("http://127.0.0.1:5000/api/db",{
+                method:'GET',
+                mode:'no-cors',
+                headers:{
+                    'Content-type':'application/json',
+                    'Accept':'application/json'
+                }
+            }).then(response=>{
+                return response.json();
+            }).then((pdata)=>{
+                console.log('pdata: ',pdata);
+                GET_Method.innerHTML = '';
+                pdata.forEach(el=>{
+                    GET_Method.innerHTML+=(el.id + '. '+el.name+' '+el.bday + '<br/>');
+                });
+            });
+        }
+        function POST(){
+            console.log("POST");
+            let now = new Date();
+            if(!compareDate()){
+                Error.innerHtml += 'Error of Date ' +'<br/>';
+                return;
+            }
+            fetch('http://127.0.0.1:5000/api/db',{
+                method:'POST',
+                mode:'no-cors',
+                headers:{
+                    'Content-type':'application/json',
+                    'Accept':'application/json'
+                },
+                body:JSON.stringify({
+                    id:ID.value,
+                    name:Name.value,
+                    bday:BDay.value
+                })
+            })
+            Name.value = "";
+            BDay.value = "";
+            ID.value = "";
+        }
+
+    </script>
+    <p style="color: red" id="Error"></p>
+</body>
+</html>
