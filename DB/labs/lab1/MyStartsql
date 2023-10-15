@@ -1,0 +1,60 @@
+--lab1
+    --#9
+        CREATE TABLE SVA_t(
+        SVA_t_ID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+        x number(3),
+        s varchar2(50)
+        )
+    --#11
+        INSERT INTO SVA_t VALUES (DEFAULT, 2 , 'SVA');
+        INSERT INTO SVA_t VALUES (DEFAULT, 6, 'GoKing');
+        INSERT INTO SVA_t VALUES (DEFAULT,22, 'sss');
+        COMMIT;
+    
+        SELECT * FROM SVA_t;
+    --#12    
+        UPDATE SVA_t 
+            SET x = 444
+                WHERE s like '%SVA%';
+        UPDATE SVA_t 
+            SET s = 'CCC'
+                WHERE X = 444;
+        COMMIT;
+        SELECT * FROM SVA_t;
+    --#13
+        SELECT X FROM SVA_t WHERE s like 'CCC%' ;
+        SELECT MAX(s) FROM SVA_t;
+        SELECT AVG(S) FROM SVA_t;
+        SELECT COUNT(*) FROM SVA_t;
+        SELECT MIN(s) FROM SVA_t;
+    --#14
+        DELETE FROM SVA_t
+            WHERE s like '%CC%'
+        COMMIT;  
+        SELECT * FROM SVA_t;
+    --#15
+        CREATE TABLE SVA_t1(
+            C1 CHAR(10),
+            SVA_T1_ID INT REFERENCES SVA_t(SVA_t_ID)
+        )
+        INSERT INTO SVA_t1 VALUES('KK',1);            
+        INSERT INTO SVA_t1 VALUES('SS',1); 
+        INSERT INTO SVA_t1 VALUES('XX',2); 
+    --#16
+        SELECT * FROM SVA_t
+            INNER JOIN SVA_t1
+                ON SVA_t.SVA_t_ID = SVA_t1.SVA_T1_ID;
+                
+        SELECT * FROM SVA_t
+            LEFT JOIN SVA_t1
+                ON SVA_t.SVA_t_ID = SVA_t1.SVA_T1_ID;
+                
+        SELECT * FROM SVA_t
+            RIGHT JOIN SVA_t1
+                ON SVA_t.SVA_t_ID = SVA_t1.SVA_T1_ID;
+        
+    --#18
+        DROP TABLE SVA_t1;
+        DROP TABLE SVA_t;
+        
+        
