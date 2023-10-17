@@ -1,4 +1,4 @@
-const send = require("goking");
+const send = require("C:\\Users\\User\\AppData\\Roaming\\npm\\node_modules\\goking");
 const http = require("http");
 const fs = require("fs");
 const url = require('url');
@@ -15,6 +15,10 @@ const server = http.createServer((request,response)=>{
         //pass BiT6maeXUAEfCX35aUQG
         //receiver smolik.valera@mail.ru
         //message test
+
+        // 1. npm adduser goking
+        // 2. npm init --scope=@goking
+        // 3. npm publish -access public
         request.on('data',data=>{
             let temp = JSON.parse(data);
             console.log(temp);
