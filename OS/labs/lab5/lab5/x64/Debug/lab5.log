@@ -1,0 +1,4 @@
+﻿  main.cpp
+D:\3k1s\OS\labs\lab5\lab5\main.cpp(55,10): warning C4244: аргумент: преобразование "DWORD_PTR" в "int", возможна потеря данных
+D:\3k1s\OS\labs\lab5\lab5\main.cpp(58,10): warning C4244: аргумент: преобразование "DWORD_PTR" в "int", возможна потеря данных
+  lab5.vcxproj -> D:\3k1s\OS\labs\lab5\x64\Debug\OS05_01.exe
