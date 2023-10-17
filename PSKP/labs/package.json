@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "goking": "^1.0.2",
+    "nodemailer": "^6.9.6"
+  }
+}

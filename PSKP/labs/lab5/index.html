@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>lab6</title>
+</head>
+<body>
+    <div style="display: inline">
+        <div style="margin: 5px">
+            <label>Отправитель</label>
+            <input type="email" id = "Sender"/>
+        </div>
+        <div style="margin: 5px">
+            <label>Пароль</label>
+            <input type="password" id="Password">
+        </div>
+        <div style="margin: 5px">
+            <label>Получатель</label>
+            <input type="email" id = "Receiver"/>
+        </div>
+        <div style="margin: 5px">
+            <label>Сообщение</label>
+            <input type="text" id = "Message"/>
+        </div>
+    </div>
+    <div>
+        <button onclick="POST()">Отправить</button>
+    </div>
+    <script>
+        function POST(){
+            console.log("post");
+            fetch('http://127.0.0.1:5000/send',{
+                method:'POST',
+                mode:'no-cors',
+                headers:{
+                    'Content-type':'application/json',
+                    'Accept':'application/json'
+                },
+                body:JSON.stringify({
+                    sender:Sender.value,
+                    password:Password.value,
+                    receiver:Receiver.value,
+                    message:Message.value
+                })
+            })
+            Sender.value = "";
+            Receiver.value = "";
+            Message.value = "";
+            Password.value="";
+        }
+    </script>
+</body>
+</html>
