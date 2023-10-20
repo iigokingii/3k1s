@@ -1,0 +1,3 @@
+﻿  TestCase.cpp
+D:\3k1s\SP\labs\lab3\SP03_04\TestCase.cpp(13,22): warning C4101: msg: неиспользованная локальная переменная
+  SP03_04.vcxproj -> D:\3k1s\SP\labs\lab3\x64\Debug\SP03_04.exe
