@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>HTTP-Method</th>
+                <th>URI</th>
+                <th>Task</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+    <script>
+        function Get(){
+            console.log("GET");
+            fetch("http://127.0.0.1:5000/commands",{
+                method:"GET",
+                headers:{
+                    'Content-type':'application/json',
+                    'Accept':'application/json'
+                }
+            }).then(response=>{
+                    return response.json();
+                }
+            ).then(pdata=>{
+                console.log("pdata: "+pdata);
+                console.log(pdata[0].URI);
+                let tbody = document.querySelector("tbody");
+                pdata.forEach(data=>tbody.append(ROW(data)));
+            })
+        }
+        Get();
+        function ROW(obj){
+            const tr = document.createElement("tr");
+            tr.setAttribute("data-rowid", obj.id);
+            console.log(obj.id);
+            let methodTD = document.createElement("td");
+            methodTD.innerHTML =obj.method;
+            tr.append(methodTD);
+            console.log(obj.method);
+            const URITD = document.createElement("td");
+            URITD.innerHTML =obj.URI;
+            tr.append(URITD);
+            console.log(obj.URI);
+            const TaskTD = document.createElement("td");
+            TaskTD.innerHTML =obj.task;
+            console.log(obj.task);
+            console.log("==================================")
+            tr.append(TaskTD);
+
+            return tr
+        }
+    </script>
+</body>
+</html>
