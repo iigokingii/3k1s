@@ -100,7 +100,7 @@ namespace ht
 	HtHandle* open
 	(
 		const wchar_t* fileName,         // имя файла
-		bool isMapFile)					// true если открыть fileMapping; false если открыть файл; по умолчанию false
+		bool isMbapFile)					// true если открыть fileMapping; false если открыть файл; по умолчанию false
 	{
 		HtHandle* htHandle;
 		if (isMapFile)

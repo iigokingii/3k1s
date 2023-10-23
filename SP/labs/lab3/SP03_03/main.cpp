@@ -20,7 +20,7 @@ int main()
 
 		cout << "ht1: " << ht1->addr << endl;
 
-		if (ht::insert(ht1, new ht::Element("test", 5, "text", 8)))
+		if (ht::insert(ht1, new ht::Element("testttt", 8, "textData", 9)))
 			cout << "-- insert: success" << endl;
 		else
 			throw "-- insert: error";
@@ -46,7 +46,7 @@ int main()
 
 		cout << "ht2: " << ht2->addr << endl;
 
-		ht::Element* hte = ht::get(ht1, new ht::Element("test", 5));
+		ht::Element* hte = ht::get(ht1, new ht::Element("testttt", 8));
 		if (hte)
 			cout << "-- get: success" << endl;
 		else

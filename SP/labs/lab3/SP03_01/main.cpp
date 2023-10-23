@@ -7,18 +7,18 @@ int main()
 	ht::HtHandle* ht = nullptr;
 	try
 	{
-		ht = ht::create(1000, 3, 10, 256, L"D:/3k1s/SP/labs/lab3/HT/HTspace.ht");
+		ht = ht::create(1000, 2, 16, 256, L"D:/3k1s/SP/labs/lab3/HT/HTspace.ht");
 		if (ht)
 			cout << "-- create: success" << endl;
 		else
 			throw "-- create: error";
 
-		if (ht::insert(ht, new ht::Element("key", 4, "payload", 8)))
+		if (ht::insert(ht, new ht::Element("test", 5, "testdata", 9)))
 			cout << "-- insert: success" << endl;
 		else
 			throw "-- insert: error";
 
-		ht::Element* hte = ht::get(ht, new ht::Element("key", 4));
+		ht::Element* hte = ht::get(ht, new ht::Element("test", 5));
 		if (hte)
 			cout << "-- get: success" << endl;
 		else
@@ -26,7 +26,7 @@ int main()
 
 		ht::print(hte);
 
-		if (ht::update(ht, hte, "newPayload", 11))
+		if (ht::update(ht, hte, "newTestData", 12))
 			cout << "-- update: success" << endl;
 		else
 			throw "-- update: error";
@@ -36,7 +36,7 @@ int main()
 		else
 			throw "-- snap: error";
 
-		hte = ht::get(ht, new ht::Element("key", 4));
+		hte = ht::get(ht, new ht::Element("test", 5));
 		if (hte)
 			cout << "-- get: success" << endl;
 		else
@@ -51,7 +51,7 @@ int main()
 		else
 			throw "-- remove: error";
 
-		hte = ht::get(ht, new ht::Element("key", 4));
+		hte = ht::get(ht, new ht::Element("test", 5));
 		if (hte)
 			cout << "-- get: success" << endl;
 		else
