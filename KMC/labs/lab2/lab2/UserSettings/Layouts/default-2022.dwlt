@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1536
     height: 780.8
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Project
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 39
+  controlID: 102
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -189,8 +189,8 @@ MonoBehaviour:
     y: 0
     width: 290.4
     height: 432.8
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 13}
@@ -347,9 +347,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 605b0000
+      m_SelectedIDs: 125a0000
       m_LastClickedID: 0
-      m_ExpandedIDs: 42e1fffface2ffffb8e4fffffce4ffff34e5ffffa0e7ffff0eeaffffd4eaffffe4ebffff02edffff1af2ffff30fbffff
+      m_ExpandedIDs: 6ef8ffffacf8ffffe4f8ffff22f9ffff68f9ffffa6f9ffffe4f9ffff22faffff30fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -753,7 +753,7 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: -0.09937347, y: 0.32422486, z: -0.034269467, w: -0.9401324}
     speed: 2
-    m_Value: {x: -0.09937247, y: 0.3242216, z: -0.034269124, w: -0.94012296}
+    m_Value: {x: -0.099373475, y: 0.32422486, z: -0.034269467, w: -0.94013244}
   m_Size:
     m_Target: 11.536924
     speed: 2
