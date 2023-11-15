@@ -1,0 +1,57 @@
+--LAB5
+    --#1
+        SELECT SUM(VALUE) FROM V$SGA;
+    --#2
+        SELECT COMPONENT,CURRENT_SIZE FROM gv$sga_dynamic_components
+            WHERE CURRENT_SIZE>0;
+    --#3
+        SELECT COMPONENT,GRANULE_SIZE FROM v$SGA_DYNAMIC_COMPONENTS;
+    --#4
+        SELECT CURRENT_SIZE FROM V$SGA_DYNAMIC_FREE_MEMORY;
+        select SUM(Bytes) as "Free_Space_SGA" from V$SGASTAT where name = 'free memory';
+        
+    --#5
+        select * from v$parameter
+            where name IN ('sga_max_size', 'sga_target');
+    --#6
+        SELECT COMPONENT,MAX_SIZE,CURRENT_SIZE FROM V$SGA_DYNAMIC_COMPONENTS WHERE COMPONENT IN ('DEFAULT buffer cache','KEEP buffer cache','RECYCLE buffer cache');
+    --#7,8
+        select TABLESPACE_NAME from dba_tablespaces;
+        CREATE TABLE XXX (K INT) STORAGE (buffer_pool keep) tablespace users;
+        CREATE TABLE YYY (K INT) STORAGE (buffer_pool DEFAULT) tablespace users;
+        
+        SELECT SEGMENT_NAME,SEGMENT_TYPE,TABLESPACE_NAME,BUFFER_POOL FROM USER_SEGMENTS 
+            WHERE SEGMENT_NAME IN('XXX','YYY');
+    --#9
+        SHOW PARAMETER LOG_BUFFER;
+    --#10
+        SELECT pool,name, bytes AS FreeSpace
+            FROM v$sgastat
+                WHERE pool = 'large pool' AND name = 'free memory';
+    --#11
+        SELECT username, server, program
+            FROM v$session
+                WHERE username is not null;
+    --#12
+        select name,description from v$bgprocess where paddr!=hextoraw('00') order by name;
+    --#13
+        select name,status,messages,idle,busy from v$shared_server;
+    --#14
+        SELECT COUNT(*) AS DBWnProcesses
+            FROM v$bgprocess
+                WHERE name = 'DBWn'
+    --#15
+        SELECT name, network_name
+            FROM v$active_services
+
+    --#16 
+        SHOW PARAMETER DISPATCHER
+    --#17 ORACLE TNSLSNR
+    --#18 C:\Oracle\app\oracle\homes\OraDB21Home1\network\admin
+    --#19 lsnrctl
+    --#20 services --DB21Home
+        
+        
+        
+        
+        
