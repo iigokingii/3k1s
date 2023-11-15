@@ -26,7 +26,7 @@ namespace Lab7Tests
             // Arrange
             double beginningBalance = 11.99;
             double debitAmount = 20.0;
-            BankAccount account = new BankAccount("Panchuk", beginningBalance);
+            BankAccount account = new BankAccount("adamovich", beginningBalance);
 
             // Act
             try
@@ -50,7 +50,7 @@ namespace Lab7Tests
             double beginningBalance = -20;
             try
             {
-                BankAccount account = new BankAccount("Panchuk", beginningBalance);
+                BankAccount account = new BankAccount("Smolik", beginningBalance);
             }
             catch (ArgumentOutOfRangeException ex)
             {
@@ -67,7 +67,7 @@ namespace Lab7Tests
             // Arrange
             double beginningBalance = 11.99;
             double debitAmount = -20.0;
-            BankAccount account = new BankAccount("Panchuk", beginningBalance);
+            BankAccount account = new BankAccount("Makrush", beginningBalance);
 
             // Act
             try
@@ -90,7 +90,7 @@ namespace Lab7Tests
             // Arrange
             double beginningBalance = 11.99;
             double creditAmount = -20.0;
-            BankAccount account = new BankAccount("Panchuk", beginningBalance);
+            BankAccount account = new BankAccount("Alfer", beginningBalance);
 
             // Act
             try
@@ -114,7 +114,7 @@ namespace Lab7Tests
             double beginningBalance = 11.99;
             double debitAmount = 4.01;
             double expected = 16;
-            BankAccount account = new BankAccount("Panchuk", beginningBalance);
+            BankAccount account = new BankAccount("Adamovich", beginningBalance);
             // Act
             account.Credit(debitAmount);
             // Assert
@@ -127,7 +127,7 @@ namespace Lab7Tests
         {
             // Arrange
             double beginningBalance = 11.99;
-            BankAccount account = new BankAccount("Panchuk", beginningBalance);
+            BankAccount account = new BankAccount("Semkin", beginningBalance);
 
             // Act
             try
@@ -149,7 +149,7 @@ namespace Lab7Tests
         {
             // Arrange
             double beginningBalance = 11.99;
-            BankAccount account = new BankAccount("Panchuk", beginningBalance);
+            BankAccount account = new BankAccount("Alfer", beginningBalance);
 
             // Act
             try
@@ -171,7 +171,7 @@ namespace Lab7Tests
         {
             // Arrange
             double beginningBalance = 11.99;
-            BankAccount account = new BankAccount("Panchuk", beginningBalance);
+            BankAccount account = new BankAccount("Gotovko", beginningBalance);
             // Act
             try
             {
@@ -190,7 +190,7 @@ namespace Lab7Tests
         {
             // Arrange
             double beginningBalance = 11.99;
-            BankAccount account = new BankAccount("Panchuk", beginningBalance);
+            BankAccount account = new BankAccount("Yatskevich", beginningBalance);
             // Act
             try
             {
