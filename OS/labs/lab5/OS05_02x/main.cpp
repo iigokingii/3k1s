@@ -47,7 +47,7 @@ void PrintThreadPriority(HANDLE threadHandle)
 
 void PrintAffinityMask(HANDLE hp, HANDLE ht) {
 	DWORD_PTR pa = NULL, sa = NULL, icpu = -1;
-	char buf[10];
+	char buf[100];
 
 	if (!GetProcessAffinityMask(hp, &pa, &sa))
 		throw "[FATAL] GetProcessAffinityMask threw an exception.";
@@ -62,7 +62,7 @@ void PrintAffinityMask(HANDLE hp, HANDLE ht) {
 
 	SYSTEM_INFO sys_info;
 	GetSystemInfo(&sys_info);
-	//cout << "Max processors count:  " << dec << sys_info.dwNumberOfProcessors << "\n";
+	cout << "Max processors count:  " << dec << sys_info.dwNumberOfProcessors << "\n";
 	icpu = SetThreadIdealProcessor(ht, MAXIMUM_PROCESSORS);
 	cout << "Thread IdealProcessor: " << dec << icpu << "\n";
 }

@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 		{
 			HANDLE processHandle = GetCurrentProcess();
 			DWORD_PTR pa = NULL, sa = NULL, icpu = -1;
-			char buf[13];
+			char buf[100];
 			int parm1 = atoi(argv[1]);
 			int parm2 = atoi(argv[2]);
 			int parm3 = atoi(argv[3]);
