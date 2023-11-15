@@ -1,0 +1,5 @@
+﻿  Main.cpp
+D:\3k1s\SP\labs\OS11_HTAPI\OS11_HTAPI\Element.h(17,3): warning C4091: __declspec(dllexport): пропускается слева от "ht::Element", когда ни одна переменная не объявлена
+D:\3k1s\SP\labs\OS11_HTAPI\OS11_HTAPI\HT.h(41,3): warning C4091: __declspec(dllexport): пропускается слева от "ht::HtHandle", когда ни одна переменная не объявлена
+D:\3k1s\SP\labs\OS11_HTAPI\SP4_02\Main.cpp(41,84): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+  SP4_02.vcxproj -> D:\3k1s\SP\labs\OS11_HTAPI\x64\Debug\SP4_02.exe
