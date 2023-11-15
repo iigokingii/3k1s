@@ -68,7 +68,7 @@ const server = http.createServer((request,response)=> {
     if (path === "/parameter" && request.method === "GET") {
         let param1 = url.parse(request.url, true).query.x;
         let param2 = url.parse(request.url, true).query.y;
-        if (typeof param1 !== "undefined" && typeof param1 !== "undefined") {
+        if (typeof param1 !== "undefined" && typeof param2 !== "undefined") {
             let x = parseInt(param1);
             let y = parseInt(param2);
             if (Number.isInteger(x) && Number.isInteger(y)) {
@@ -80,7 +80,7 @@ const server = http.createServer((request,response)=> {
                     let dif = x - y;
                     let mul = x * y;
                     let div = x / y;
-                    response.status = 200;
+                    response.statusCode  = 200;
                     response.end(
                         '<!DOCTYPE html><html><head><title>01-02</title></head>' +
                         '<body>' +
@@ -120,7 +120,7 @@ const server = http.createServer((request,response)=> {
                         let dif = x - y;
                         let mul = x * y;
                         let div = x / y;
-                        response.status = 200;
+                        response.statusCode  = 200;
                         response.end(
                             '<!DOCTYPE html><html><head><title>01-02</title></head>' +
                             '<body>' +
@@ -220,7 +220,7 @@ const server = http.createServer((request,response)=> {
             let name = '';
             let concat = data.s + " :" + data.o.surname + ", " + data.o.name;
             let messageFromServer = {
-                "__comment": data.__comment,
+                "__comment": "Ответ.Лабораторная работа 8/10",
                 "x_plus_y": x_plus_y,
                 "Concatination_s_O": concat,
                 "Length_m": data.m.length
@@ -237,7 +237,7 @@ const server = http.createServer((request,response)=> {
                 <m value = "a"/>
                 <m value = "b"/>
                 <m value = "c"/>
-            <request/>
+            </request>
         */
         let body = '';
         request.on('data', chunk => {

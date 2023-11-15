@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "axios": "^1.6.0",
     "goking": "^1.0.2",
-    "nodemailer": "^6.9.6"
+    "nodemailer": "^6.9.6",
+    "xml2js": "^0.6.2"
   }
 }
