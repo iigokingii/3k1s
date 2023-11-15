@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Controller
+	@Controller
 public class FilmController {
 	private static List<Film> films = new ArrayList<Film>();
 	private static int id = 0;
