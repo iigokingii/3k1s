@@ -1,3 +1,11 @@
 .opendb
 /TPO/labs/jenkins
 /TPO/labs/lab5
+/DB/labs/pass.txt
+/ET
+/TPVI/labs/lab1/
+*.suo
+*.vsidx
+*.Browse.VC.db
+PSKP/labs/node_modules/
+KP/
