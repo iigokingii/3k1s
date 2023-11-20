@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>08-01</h1>
+    <button id="startWS">startWS</button>
+    <div>
+        <label>Messages from server:</label>
+        <div id="ServerMessages"></div>
+    </div>
+    <script>
+        document.getElementById("startWS").addEventListener('click',async (e)=>{
+            e.preventDefault();
+            connectToWS();
+        })
+        function AddToPage(message){
+            let divElement = document.getElementById("ServerMessages");
+            let p = document.createElement("p");
+            p.textContent = `Message from server: ${message.data}`;
+            divElement.append(p);
+        }
+        let k = 0;
+        function connectToWS(){
+            //end after 25 sec
+            setTimeout(() => {
+                // Останавливаем передачу сообщений
+                myWs.onmessage = null;
+                console.log('Ended');
+                // Закрываем WS-соединение
+                myWs.close();
+            },25000);
+
+
+            const myWs = new WebSocket('ws://localhost:4000');
+            myWs.onopen = function () {
+                console.log('The client connected to the server via port 400');
+            };
+            myWs.onmessage = function (message) {
+                console.log('Message From Server: %s', message.data);
+                AddToPage(message);
+                sendDataToServer(myWs);
+            };
+            sendDataToServer(myWs);
+        }
+        function sendDataToServer(myWs){
+            k++;
+            let data= {
+                action: 'client',
+                message: `08-01-client:${k}`
+            }
+            setTimeout(()=>{
+                myWs.send(JSON.stringify(data));
+            },3000)
+        }
+    </script>
+</body>
+</html>
