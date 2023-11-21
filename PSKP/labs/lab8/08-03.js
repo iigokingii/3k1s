@@ -9,7 +9,6 @@ server.on('connection', (socket) => {
         clients.forEach((client) => {
             if (client !== socket) {
                 setTimeout(()=>{
-                    console.log('ssss');
                     client.send(JSON.stringify(jsonMessage));
                 },5000);
             }

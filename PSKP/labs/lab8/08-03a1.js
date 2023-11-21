@@ -15,7 +15,7 @@ function sendDataToServer(myWs){
     k++;
     let data= {
         action: 'client',
-        message: `interesting message from client`
+        message: `interesting message from client-a1`
     }
     setTimeout(()=>{
         myWs.send(JSON.stringify(data));
