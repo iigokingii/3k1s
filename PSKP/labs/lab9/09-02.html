@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <button id="GetData">Get File Data:</button>
+    <div id="Data"></div>
+</body>
+<script>
+    document.getElementById("GetData").addEventListener('click',()=>{
+        const div = document.getElementById("Data");
+
+        const myWs = new WebSocket('ws://localhost:4000');
+
+        myWs.onopen = function () {
+            console.log('The client connected to the server via port 4000');
+        };
+        myWs.onmessage = function (message) {
+            const jsonMessage = JSON.parse(message.data);
+            switch (jsonMessage.action) {
+                case 'sendFile':
+                    console.log(jsonMessage.data)
+                    const p = document.createElement("p");
+                    p.innerHTML = jsonMessage.data;
+                    div.append(p);
+                    break;
+                default:
+                    console.log('Неизвестная команда');
+                    break;
+            };
+        }
+    });
+</script>
+</html>

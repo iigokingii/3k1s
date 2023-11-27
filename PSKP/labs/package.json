@@ -1,8 +1,10 @@
 {
   "dependencies": {
+    "async": "^3.2.5",
     "axios": "^1.6.0",
     "goking": "^1.0.2",
     "nodemailer": "^6.9.6",
+    "rpc-websockets": "^7.8.0",
     "ws": "^8.14.2",
     "xml2js": "^0.6.2"
   }
