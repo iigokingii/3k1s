@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Auth.cpp" />
     <ClCompile Include="Element.cpp" />
     <ClCompile Include="HT.cpp" />
     <ClCompile Include="pch.cpp">
@@ -149,6 +150,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Auth.h" />
     <ClInclude Include="Element.h" />
     <ClInclude Include="HT.h" />
     <ClInclude Include="pch.h" />

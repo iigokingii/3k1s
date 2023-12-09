@@ -17,16 +17,18 @@ namespace ht
 		this->addr = NULL;
 		ZeroMemory(this->lastErrorMessage, sizeof(this->lastErrorMessage));
 		this->lastSnaptime = 0;
+
 		this->count = 0;
 	}
 
-	HtHandle::HtHandle(int capacity, int secSnapshotInterval, int maxKeyLength, int maxPayloadLength, const wchar_t* fileName) : HtHandle()
+	HtHandle::HtHandle(int capacity, int secSnapshotInterval, int maxKeyLength, int maxPayloadLength, const wchar_t* htUsersGroup, const wchar_t* fileName) : HtHandle()
 	{
 		this->capacity = capacity;
 		this->secSnapshotInterval = secSnapshotInterval;
 		this->maxKeyLength = maxKeyLength;
 		this->maxPayloadLength = maxPayloadLength;
 		memcpy(this->fileName, fileName, sizeof(this->fileName));
+		memcpy(this->htUsersGroup, htUsersGroup, sizeof(this->htUsersGroup));
 	}
 
 	HtHandle* create(
@@ -34,12 +36,20 @@ namespace ht
 		int   secSnapshotInterval,		// переодичность сохранения в сек.
 		int   maxKeyLength,             // максимальный размер ключа
 		int   maxPayloadLength,			// максимальный размер данных
+		const wchar_t* htUsersGroup,	// имя группы OS-пользователей
 		const wchar_t* fileName)		// имя файла 
 	{
-		HtHandle* htHandle = createHt(capacity, secSnapshotInterval, maxKeyLength, maxPayloadLength, fileName);
-		runSnapshotTimer(htHandle);
+		if (canCreateHtFor(htUsersGroup))
+		{
+			HtHandle* htHandle = createHt(capacity, secSnapshotInterval, maxKeyLength, maxPayloadLength, htUsersGroup, fileName);
+			runSnapshotTimer(htHandle);
 
-		return htHandle;
+			return htHandle;
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 
 	HtHandle* createHt(
@@ -47,6 +57,7 @@ namespace ht
 		int   secSnapshotInterval,		// переодичность сохранения в сек.
 		int   maxKeyLength,             // максимальный размер ключа
 		int   maxPayloadLength,			// максимальный размер данных
+		const wchar_t* htUsersGroup,	// имя группы OS-пользователей
 		const wchar_t* fileName)		// имя файла 
 	{
 		HANDLE hf = CreateFile(
@@ -79,7 +90,7 @@ namespace ht
 
 		ZeroMemory(lp, sizeMap);
 
-		HtHandle* htHandle = new(lp) HtHandle(capacity, secSnapshotInterval, maxKeyLength, maxPayloadLength, fileName);
+		HtHandle* htHandle = new(lp) HtHandle(capacity, secSnapshotInterval, maxKeyLength, maxPayloadLength, htUsersGroup, fileName);
 		htHandle->file = hf;
 		htHandle->fileMapping = hm;
 		htHandle->addr = lp;
@@ -92,11 +103,36 @@ namespace ht
 		return htHandle;
 	}
 
-	void CALLBACK snapAsync(LPVOID prm, DWORD, DWORD)
+	bool canCreateHtFor(const wchar_t* htUsersGroup)
 	{
-		HtHandle* htHandle = (HtHandle*)prm;
-		if (snap(htHandle))
-			std::cout << "-- spanshotAsync success" << std::endl;
+		if (isExistUsersGroup(htUsersGroup))
+		{
+			if (isCurrentUserBelongTo(htUsersGroup) || isCurrentUserBelongTo(L"Администраторы"))
+				return true;
+		}
+
+		return false;
+	}
+
+	HtHandle* open
+	(
+		const wchar_t* fileName,        // имя файла
+		const wchar_t* htUser,			// HT-пользователь
+		const wchar_t* htPassword,		// пароль
+		bool isMapFile)					// true если открыть fileMapping; false если открыть файл; по умолчанию false
+	{
+		HtHandle* htHandle = openWithoutAuth(fileName, isMapFile);
+
+		if (htHandle)
+		{
+			if (!canOpenHt(htHandle, htUser, htPassword))
+			{
+				close(htHandle);
+				return NULL;
+			}
+		}
+
+		return htHandle;
 	}
 
 	HtHandle* open
@@ -104,7 +140,27 @@ namespace ht
 		const wchar_t* fileName,         // имя файла
 		bool isMapFile)					// true если открыть fileMapping; false если открыть файл; по умолчанию false
 	{
-		HtHandle* htHandle;
+		HtHandle* htHandle = openWithoutAuth(fileName, isMapFile);
+
+		if (htHandle)
+		{
+			if (!canOpenHt(htHandle))
+			{
+				close(htHandle);
+				return NULL;
+			}
+		}
+
+		return htHandle;
+	}
+
+	HtHandle* openWithoutAuth
+	(
+		const wchar_t* fileName,         // имя файла
+		bool isMapFile)					// true если открыть fileMapping; false если открыть файл; по умолчанию false
+	{
+		HtHandle* htHandle = NULL;
+
 		if (isMapFile)
 		{
 			htHandle = openHtFromMapName(fileName);
@@ -189,6 +245,16 @@ namespace ht
 		return htHandle;
 	}
 
+	bool canOpenHt(HtHandle* htHandle)
+	{
+		return isCurrentUserBelongTo(htHandle->htUsersGroup);
+	}
+
+	bool canOpenHt(HtHandle* htHandle, const wchar_t* htUser, const wchar_t* htPassword)
+	{
+		return isUserBelongToUsersGroup(htUser, htHandle->htUsersGroup) && verifyUser(htUser, htPassword);
+	}
+
 	BOOL runSnapshotTimer(HtHandle* htHandle)
 	{
 		htHandle->snapshotTimer = CreateWaitableTimer(0, FALSE, 0);
@@ -197,6 +263,13 @@ namespace ht
 		SetWaitableTimer(htHandle->snapshotTimer, &Li, htHandle->secSnapshotInterval * 1000, snapAsync, htHandle, FALSE);
 
 		return true;
+	}
+
+	void CALLBACK snapAsync(LPVOID prm, DWORD, DWORD)
+	{
+		HtHandle* htHandle = (HtHandle*)prm;
+		if (snap(htHandle))
+			std::cout << "-- spanshotAsync success" << std::endl;
 	}
 
 	Element* get     //  читать элемент из хранилища

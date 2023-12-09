@@ -1,6 +1,7 @@
-#include"pch.h"
+#include "pch.h"
 #include "HT.h"
-#include <windows.h>
+#include<Windows.h>
+#include<iostream>
 
 namespace ht
 {
@@ -20,13 +21,14 @@ namespace ht
 		this->count = 0;
 	}
 
-	HtHandle::HtHandle(int capacity, int secSnapshotInterval, int maxKeyLength, int maxPayloadLength, const wchar_t* fileName) : HtHandle()
+	HtHandle::HtHandle(int capacity, int secSnapshotInterval, int maxKeyLength, int maxPayloadLength, const wchar_t* htUsersGroup, const wchar_t* fileName) : HtHandle()
 	{
 		this->capacity = capacity;
 		this->secSnapshotInterval = secSnapshotInterval;
 		this->maxKeyLength = maxKeyLength;
 		this->maxPayloadLength = maxPayloadLength;
 		memcpy(this->fileName, fileName, sizeof(this->fileName));
+		memcpy(this->htUsersGroup, htUsersGroup, sizeof(this->htUsersGroup));
 	}
 
 	HtHandle* create(
@@ -34,12 +36,20 @@ namespace ht
 		int   secSnapshotInterval,		// переодичность сохранения в сек.
 		int   maxKeyLength,             // максимальный размер ключа
 		int   maxPayloadLength,			// максимальный размер данных
+		const wchar_t* htUsersGroup,	// имя группы OS-пользователей
 		const wchar_t* fileName)		// имя файла 
 	{
-		HtHandle* htHandle = createHt(capacity, secSnapshotInterval, maxKeyLength, maxPayloadLength, fileName);
-		runSnapshotTimer(htHandle);
+		if (canCreateHtFor(htUsersGroup))
+		{
+			HtHandle* htHandle = createHt(capacity, secSnapshotInterval, maxKeyLength, maxPayloadLength, htUsersGroup, fileName);
+			runSnapshotTimer(htHandle);
 
-		return htHandle;
+			return htHandle;
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 
 	HtHandle* createHt(
@@ -47,6 +57,7 @@ namespace ht
 		int   secSnapshotInterval,		// переодичность сохранения в сек.
 		int   maxKeyLength,             // максимальный размер ключа
 		int   maxPayloadLength,			// максимальный размер данных
+		const wchar_t* htUsersGroup,	// имя группы OS-пользователей
 		const wchar_t* fileName)		// имя файла 
 	{
 		HANDLE hf = CreateFile(
@@ -54,7 +65,7 @@ namespace ht
 			GENERIC_WRITE | GENERIC_READ,
 			NULL,
 			NULL,
-			OPEN_ALWAYS,
+			CREATE_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL,
 			NULL);
 		if (hf == INVALID_HANDLE_VALUE)
@@ -79,7 +90,7 @@ namespace ht
 
 		ZeroMemory(lp, sizeMap);
 
-		HtHandle* htHandle = new(lp) HtHandle(capacity, secSnapshotInterval, maxKeyLength, maxPayloadLength, fileName);
+		HtHandle* htHandle = new(lp) HtHandle(capacity, secSnapshotInterval, maxKeyLength, maxPayloadLength, htUsersGroup, fileName);
 		htHandle->file = hf;
 		htHandle->fileMapping = hm;
 		htHandle->addr = lp;
@@ -92,20 +103,64 @@ namespace ht
 		return htHandle;
 	}
 
-	void CALLBACK snapAsync(LPVOID prm, DWORD, DWORD)
+	bool canCreateHtFor(const wchar_t* htUsersGroup)
 	{
-		HtHandle* htHandle = (HtHandle*)prm;
-		if (snap(htHandle))
-			std::cout << "-- spanshotAsync success" << std::endl;
+		if (isExistUsersGroup(htUsersGroup))
+		{
+			if (isCurrentUserBelongTo(htUsersGroup) || isCurrentUserBelongTo(L"Администраторы"))
+				return true;
+		}
+
+		return false;
+	}
+
+	HtHandle* open
+	(
+		const wchar_t* fileName,        // имя файла
+		const wchar_t* htUser,			// HT-пользователь
+		const wchar_t* htPassword,		// пароль
+		bool isMapFile)					// true если открыть fileMapping; false если открыть файл; по умолчанию false
+	{
+		HtHandle* htHandle = openWithoutAuth(fileName, isMapFile);
+
+		if (htHandle)
+		{
+			if (!canOpenHt(htHandle, htUser, htPassword))
+			{
+				close(htHandle);
+				return NULL;
+			}
+		}
+
+		return htHandle;
 	}
 
 	HtHandle* open
 	(
 		const wchar_t* fileName,         // имя файла
-		bool isMapFile// true если открыть fileMapping; false если открыть файл; по умолчанию false
-	)					
+		bool isMapFile)					// true если открыть fileMapping; false если открыть файл; по умолчанию false
 	{
-		HtHandle* htHandle;
+		HtHandle* htHandle = openWithoutAuth(fileName, isMapFile);
+
+		if (htHandle)
+		{
+			if (!canOpenHt(htHandle))
+			{
+				close(htHandle);
+				return NULL;
+			}
+		}
+
+		return htHandle;
+	}
+
+	HtHandle* openWithoutAuth
+	(
+		const wchar_t* fileName,         // имя файла
+		bool isMapFile)					// true если открыть fileMapping; false если открыть файл; по умолчанию false
+	{
+		HtHandle* htHandle = NULL;
+
 		if (isMapFile)
 		{
 			htHandle = openHtFromMapName(fileName);
@@ -128,7 +183,7 @@ namespace ht
 			GENERIC_WRITE | GENERIC_READ,
 			NULL,
 			NULL,
-			OPEN_ALWAYS,
+			OPEN_EXISTING,
 			FILE_ATTRIBUTE_NORMAL,
 			NULL);
 		if (hf == INVALID_HANDLE_VALUE)
@@ -155,6 +210,10 @@ namespace ht
 		htHandle->fileMapping = hm;
 		htHandle->addr = lp;
 		htHandle->lastSnaptime = time(NULL);
+		htHandle->mutex = CreateMutex(
+			NULL,
+			FALSE,
+			fileName);
 
 		return htHandle;
 	}
@@ -162,11 +221,9 @@ namespace ht
 	HtHandle* openHtFromMapName(
 		const wchar_t* fileName)
 	{
-		HANDLE hm = CreateFileMapping(
-			INVALID_HANDLE_VALUE,
-			NULL,
-			PAGE_READWRITE,
-			0, sizeof(HtHandle),
+		HANDLE hm = OpenFileMapping(
+			FILE_MAP_ALL_ACCESS,
+			false,
 			fileName);
 		if (!hm)
 			return NULL;
@@ -178,39 +235,24 @@ namespace ht
 		if (!lp)
 			return NULL;
 
-		HtHandle* htHandle = (HtHandle*)lp;
-
-		int sizeMapping = sizeof(HtHandle) + getSizeElement(htHandle->maxKeyLength, htHandle->maxPayloadLength) * htHandle->capacity;
-
-		if (!UnmapViewOfFile(lp))
-			return NULL;
-		if (!CloseHandle(hm))
-			return NULL;
-
-		hm = CreateFileMapping(
-			INVALID_HANDLE_VALUE,
-			NULL,
-			PAGE_READWRITE,
-			0, sizeMapping,
-			fileName);
-		if (!hm)
-			return NULL;
-
-		lp = MapViewOfFile(
-			hm,
-			FILE_MAP_ALL_ACCESS,
-			0, 0, 0);
-		if (!lp)
-			return NULL;
-
-		htHandle = new HtHandle();
+		HtHandle* htHandle = new HtHandle();
 		memcpy(htHandle, lp, sizeof(HtHandle));
 		htHandle->file = NULL;
 		htHandle->fileMapping = hm;
 		htHandle->addr = lp;
-		htHandle->lastSnaptime = time(NULL);
+		htHandle->snapshotTimer = NULL;
 
 		return htHandle;
+	}
+
+	bool canOpenHt(HtHandle* htHandle)
+	{
+		return isCurrentUserBelongTo(htHandle->htUsersGroup);
+	}
+
+	bool canOpenHt(HtHandle* htHandle, const wchar_t* htUser, const wchar_t* htPassword)
+	{
+		return isUserBelongToUsersGroup(htUser, htHandle->htUsersGroup) && verifyUser(htUser, htPassword);
 	}
 
 	BOOL runSnapshotTimer(HtHandle* htHandle)
@@ -218,9 +260,16 @@ namespace ht
 		htHandle->snapshotTimer = CreateWaitableTimer(0, FALSE, 0);
 		LARGE_INTEGER Li{};
 		Li.QuadPart = -(SECOND * htHandle->secSnapshotInterval);
-		SetWaitableTimer(htHandle->snapshotTimer, &Li, 1, snapAsync, htHandle, FALSE);
+		SetWaitableTimer(htHandle->snapshotTimer, &Li, htHandle->secSnapshotInterval * 1000, snapAsync, htHandle, FALSE);
 
 		return true;
+	}
+
+	void CALLBACK snapAsync(LPVOID prm, DWORD, DWORD)
+	{
+		HtHandle* htHandle = (HtHandle*)prm;
+		if (snap(htHandle))
+			std::cout << "-- spanshotAsync success" << std::endl;
 	}
 
 	Element* get     //  читать элемент из хранилища
@@ -228,6 +277,7 @@ namespace ht
 		HtHandle* htHandle,            // управление HT
 		const Element* element)              // элемент 
 	{
+		WaitForSingleObject(htHandle->mutex, INFINITE);
 		int index = findIndex(htHandle, element);
 		if (index < 0)
 		{
@@ -237,6 +287,7 @@ namespace ht
 
 		Element* foundElement = new Element();
 		readFromMemory(htHandle, foundElement, index);
+		ReleaseMutex(htHandle->mutex);
 
 		return foundElement;
 	}
@@ -254,6 +305,8 @@ namespace ht
 
 		WaitForSingleObject(htHandle->mutex, INFINITE);
 		int freeIndex = findFreeIndex(htHandle, element);
+		if (freeIndex < 0)
+			return false;
 
 		writeToMemory(htHandle, element, freeIndex);
 		incrementCount(htHandle);
@@ -285,7 +338,7 @@ namespace ht
 		return true;
 	}
 
-	BOOL remove      // удалить элемент в хранилище
+	BOOL removeOne      // удалить элемент в хранилище
 	(
 		HtHandle* htHandle,            // управление HT (ключ)
 		const Element* element)				 // элемент 
@@ -340,16 +393,16 @@ namespace ht
 	{
 		HANDLE hf = htHandle->file;
 		HANDLE hfm = htHandle->fileMapping;
+		HANDLE mutex = htHandle->mutex;
 
-		if (!CancelWaitableTimer(htHandle->snapshotTimer))
-			throw "cancel snapshotTimer failed";
-		if (!UnmapViewOfFile(htHandle->addr))
-			throw "unmapping view failed";
-		if (!CloseHandle(hfm))
-			throw "close File Mapping failed";
-		if (hf != NULL)
-			if (!CloseHandle(hf))
-				throw "close File failed";
+		if (htHandle->snapshotTimer)
+			CancelWaitableTimer(htHandle->snapshotTimer);
+		UnmapViewOfFile(htHandle->addr);
+		CloseHandle(hfm);
+		if (hf)
+			CloseHandle(hf);
+		if (mutex)
+			CloseHandle(mutex);
 
 		return true;
 	}
@@ -362,6 +415,11 @@ namespace ht
 		return i % capacity;
 	}
 
+	int nextHash(int currentHash, const char* key, int capacity)
+	{
+		return ++currentHash;
+	}
+
 	int findFreeIndex(
 		const HtHandle* htHandle,           // управление HT
 		const Element* element)				// элемент
@@ -371,41 +429,21 @@ namespace ht
 		Element* foundElement = new Element();
 		do
 		{
-			if (index >= htHandle->capacity)
+			if (index >= htHandle->capacity ||
+				foundElement->key != NULL && memcmp(foundElement->key, element->key, element->keyLength) == NULL)
 			{
 				index = -1;
 				break;
 			}
 
 			readFromMemory(htHandle, foundElement, index);
-			index++;
+			index = nextHash(index, (char*)element->key, htHandle->capacity);
 		} while (
 			foundElement->keyLength != NULL &&
 			foundElement->payloadLength != NULL);
 
 		delete foundElement;
 		return index - 1;
-	}
-
-	BOOL removeOne      // удалить элемент в хранилище
-	(
-		HtHandle* htHandle,            // управление HT (ключ)
-		const Element* element)				 // элемент 
-	{
-		WaitForSingleObject(htHandle->mutex, INFINITE);
-		int index = findIndex(htHandle, element);
-		if (index < 0)
-		{
-			writeLastError(htHandle, "-- not found element (DELETE)");
-			ReleaseMutex(htHandle->mutex);
-			return false;
-		}
-
-		clearMemoryByIndex(htHandle, index);
-		decrementCount(htHandle);
-		ReleaseMutex(htHandle->mutex);
-
-		return true;
 	}
 
 	int findIndex(
@@ -424,7 +462,7 @@ namespace ht
 			}
 
 			readFromMemory(htHandle, foundElement, index);
-			index++;
+			index = nextHash(index, (char*)element->key, htHandle->capacity);
 		} while (
 			memcmp(foundElement->key, element->key, element->keyLength) != NULL);
 
@@ -437,14 +475,14 @@ namespace ht
 		LPVOID lp = htHandle->addr;
 
 		lp = (HtHandle*)lp + 1;
-		lp = (byte*)lp + getSizeElement(htHandle->maxKeyLength, htHandle->maxPayloadLength) * index;
+		lp = (BYTE*)lp + getSizeElement(htHandle->maxKeyLength, htHandle->maxPayloadLength) * index;
 
 		memcpy(lp, element->key, element->keyLength);
-		lp = (byte*)lp + htHandle->maxKeyLength;
+		lp = (BYTE*)lp + htHandle->maxKeyLength;
 		memcpy(lp, &element->keyLength, sizeof(int));
-		lp = (byte*)lp + sizeof(int);
+		lp = (int*)lp + 1;
 		memcpy(lp, element->payload, element->payloadLength);
-		lp = (byte*)lp + htHandle->maxPayloadLength;
+		lp = (BYTE*)lp + htHandle->maxPayloadLength;
 		memcpy(lp, &element->payloadLength, sizeof(int));
 
 		return true;
@@ -460,14 +498,14 @@ namespace ht
 		LPVOID lp = htHandle->addr;
 
 		lp = (HtHandle*)lp + 1;
-		lp = (byte*)lp + getSizeElement(htHandle->maxKeyLength, htHandle->maxPayloadLength) * index;
+		lp = (BYTE*)lp + getSizeElement(htHandle->maxKeyLength, htHandle->maxPayloadLength) * index;
 
 		element->key = lp;
-		lp = (byte*)lp + htHandle->maxKeyLength;
+		lp = (BYTE*)lp + htHandle->maxKeyLength;
 		element->keyLength = *(int*)lp;
-		lp = (byte*)lp + sizeof(int);
+		lp = (int*)lp + 1;
 		element->payload = lp;
-		lp = (byte*)lp + htHandle->maxPayloadLength;
+		lp = (BYTE*)lp + htHandle->maxPayloadLength;
 		element->payloadLength = *(int*)lp;
 
 		return element;
@@ -479,7 +517,7 @@ namespace ht
 		int sizeElement = getSizeElement(htHandle->maxKeyLength, htHandle->maxPayloadLength);
 
 		lp = (HtHandle*)lp + 1;
-		lp = (byte*)lp + sizeElement * index;
+		lp = (BYTE*)lp + sizeElement * index;
 
 		ZeroMemory(lp, sizeElement);
 

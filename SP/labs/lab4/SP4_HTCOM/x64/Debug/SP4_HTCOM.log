@@ -1,0 +1,8 @@
+﻿  COM.cpp
+  ImplClass.cpp
+  ImplClassFactory.cpp
+  Install.cpp
+  Создание кода...
+     Создается библиотека D:\3k1s\SP\labs\lab4\x64\Debug\SP4_HTCOM.lib и объект D:\3k1s\SP\labs\lab4\x64\Debug\SP4_HTCOM.exp
+SP4_HTCOM.exp : warning LNK4070: директива /OUT:CONDILL.dll в .EXP отличается от имени выходного файла "D:\3k1s\SP\labs\lab4\x64\Debug\SP4_HTCOM.dll"; директива игнорируется
+  SP4_HTCOM.vcxproj -> D:\3k1s\SP\labs\lab4\x64\Debug\SP4_HTCOM.dll

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Element.h"
+#include "../../lab3/SP03_HTAPI/Auth.h"
 
 #define SECOND 10000000
 
@@ -23,7 +24,7 @@ namespace ht    // HT API
 	struct HtHandle    // блок управлени€ HT
 	{
 		HtHandle();
-		HtHandle(int capacity, int secSnapshotInterval, int maxKeyLength, int maxPayloadLength, const wchar_t* fileName);
+		HtHandle(int capacity, int secSnapshotInterval, int maxKeyLength, int maxPayloadLength, const wchar_t* htUsersGroup, const wchar_t* fileName);
 		int     capacity;               // емкость хранилища в количестве элементов 
 		int     secSnapshotInterval;    // переодичность сохранени€ в сек. 
 		int     maxKeyLength;           // максимальна€ длина ключа
@@ -38,29 +39,39 @@ namespace ht    // HT API
 		int count;						// текущее количество элементов в хэш-таблице
 		HANDLE snapshotTimer;			// таймер дл€ snapshot
 		HANDLE mutex;					// mutex дл€ синхронизации нескольких экземпл€ров HtHandle
+
+		////////////
+		wchar_t htUsersGroup[512];
 	};
 
 	HtHandle* create   //  создать HT             
 	(
-		int	  capacity,					   // емкость хранилища
-		int   secSnapshotInterval,		   // переодичность сохранени€ в сек.
-		int   maxKeyLength,                // максимальный размер ключа
-		int   maxPayloadLength,            // максимальный размер данных
-		const wchar_t* fileName           // им€ файла 
+		int	  capacity,						// емкость хранилища
+		int   secSnapshotInterval,			// переодичность сохранени€ в сек.
+		int   maxKeyLength,					// максимальный размер ключа
+		int   maxPayloadLength,				// максимальный размер данных
+		////////////
+		const wchar_t* htUsersGroup,		// им€ группы OS-пользователей
+
+
+		const wchar_t* fileName				// им€ файла 
 	); 	// != NULL успешное завершение  
 
 	HtHandle* open     //  открыть HT             
 	(
-		const wchar_t* fileName,         // им€ файла
-		bool isMapFile = false// true если открыть fileMapping; false если открыть файл; по умолчанию false
-
+		const wchar_t* fileName,        // им€ файла 
+		////////////
+		const wchar_t* htUser,			// HT-пользователь
+		const wchar_t* htPassword,		// пароль
+		////////////
+		bool isMapFile = false			// true если открыть fileMapping; false если открыть файл; по умолчанию false
 	); 	// != NULL успешное завершение  
 
-	BOOL removeOne      // удалить элемент в хранилище
+	HtHandle* open     //  открыть HT             
 	(
-		HtHandle* htHandle,            // управление HT (ключ)
-		const Element* element			// элемент 
-	);				 
+		const wchar_t* fileName,        // им€ файла 
+		bool isMapFile = false			// true если открыть fileMapping; false если открыть файл; по умолчанию false
+	); 	// != NULL успешное завершение  
 
 	BOOL snap         // выполнить Snapshot
 	(
@@ -80,7 +91,7 @@ namespace ht    // HT API
 	);	//  == TRUE успешное завершение 
 
 
-	BOOL remove      // удалить элемент в хранилище
+	BOOL removeOne      // удалить элемент в хранилище
 	(
 		HtHandle* htHandle,            // управление HT (ключ)
 		const Element* element              // элемент 
@@ -131,8 +142,15 @@ namespace ht    // HT API
 		int   secSnapshotInterval,		// переодичность сохранени€ в сек.
 		int   maxKeyLength,             // максимальный размер ключа
 		int   maxPayloadLength,			// максимальный размер данных
+		const wchar_t* htUsersGroup,	// им€ группы OS-пользователей
 		const wchar_t* fileName);		// им€ файла 
+	bool canCreateHtFor(const wchar_t* htUsersGroup);
+
+	HtHandle* openWithoutAuth(const wchar_t* fileName, bool isMapFile);
 	HtHandle* openHtFromFile(const wchar_t* fileName);
 	HtHandle* openHtFromMapName(const wchar_t* fileName);
+	bool canOpenHt(HtHandle* htHandle);
+	bool canOpenHt(HtHandle* htHandle, const wchar_t* htUser, const wchar_t* htPassword);
+
 	BOOL runSnapshotTimer(HtHandle* htHandle);
 };
